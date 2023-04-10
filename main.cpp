@@ -23,7 +23,7 @@ public:
 
     double median() {
        //Arrays.sort(data);
-        std::sort(data.begin(),data.end());
+       std::sort(data.begin(),data.end());
        if (data.length() % 2 == 0)
           return (data[(data.length() / 2) - 1] + data[data.length() / 2]) / 2.0;
        return data[data.length() / 2];
@@ -33,25 +33,35 @@ public:
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-
     QVector<float> d;
     unsigned int total = 60*60*24*365; // sec * min * hour * days
-    for(unsigned int i =0; i < total;i++)
-    {
-        d.push_back(random() % 50 + 50);
-        if(i % (24*3600) == 0)
-        {
-            Statistics s(d);
-            s.getMean();
-            s.median();
-            std::cout << i << " of " << total << " ";
-            std::cout << "average temperature " << s.getMean() << " ";
-            std::cout << " with median " << s.median() << "\n";
-            d.erase(d.begin(),d.end());
-        }
-    }
+    int option;
 
-    std::cout << "Done in serial mode\n";
+    std::cout << " ==== Problemas de Sincronización ==== " << std::endl;
+    std::cout << "  1. Secuencialmente." << std::endl;
+    std::cout << "  2. Paralelización con hilos." << std::endl;
+    std::cin >> option;
+
+    if (argc == 1) {
+        for(unsigned int i =0; i < total; i++)
+        {
+            d.push_back(random() % 50 + 50);    // generate a number between 50 and 99
+            if(i % (24*3600) == 0)
+            {
+                Statistics s(d);
+                s.getMean();
+                s.median();
+                std::cout << i << " of " << total << " ";
+                std::cout << "average temperature " << s.getMean() << " ";
+                std::cout << " with median " << s.median() << "\n";
+                d.erase(d.begin(),d.end());
+            }
+        }
+
+        std::cout << "Done in serial mode\n";
+    } else if (argc == 2 && ((std::string)argv[1] == "-h" || ((std::string)argv[1] == "--help"))) {
+        std::cout << "Help guide" << std::endl;
+    }
 
     return 0;
 }
