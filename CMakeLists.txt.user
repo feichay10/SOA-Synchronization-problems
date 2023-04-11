@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 9.0.2, 2023-04-10T17:58:13. -->
+<!-- Written by QtCreator 9.0.2, 2023-04-11T20:17:02. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -388,6 +388,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseTerminal">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/feichay/Escritorio/Practicas-SOA/build-2223-soa-practica-sincronizacion-nombre-Desktop_Qt_5_15_2_GCC_64bit-Profile</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
