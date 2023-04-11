@@ -30,6 +30,22 @@ class Statistics {
   }
 };
 
+void serialMode(QVector<float> d, unsigned int total)
+{
+    for (unsigned int i = 0; i < total; i++) {
+      d.push_back(random() % 50 + 50);  // generate a number between 50 and 99
+      if (i % (24 * 3600) == 0) {
+        Statistics s(d);
+        s.getMean();
+        s.median();
+        std::cout << i << " of " << total << " ";
+        std::cout << "average temperature " << s.getMean() << " ";
+        std::cout << " with median " << s.median() << "\n";
+        d.erase(d.begin(), d.end());
+      }
+    }
+}
+
 int main(int argc, char *argv[]) {
   QCoreApplication a(argc, argv);
   QVector<float> d;
@@ -51,30 +67,19 @@ int main(int argc, char *argv[]) {
 
   switch (option) {
     case 1:
-      for (unsigned int i = 0; i < total; i++) {
-        d.push_back(random() % 50 + 50);  // generate a number between 50 and 99
-        if (i % (24 * 3600) == 0) {
-          Statistics s(d);
-          s.getMean();
-          s.median();
-          std::cout << i << " of " << total << " ";
-          std::cout << "average temperature " << s.getMean() << " ";
-          std::cout << " with median " << s.median() << "\n";
-          d.erase(d.begin(), d.end());
-        }
-      }
-      std::cout << "Done in serial mode\n";
-      break;
+        serialMode(d, total);
+        std::cout << "Done in serial mode\n";
+        break;
     case 2:
-      std::cout << "Done in producer-consumer mode\n";
-      break;
+        std::cout << "Done in producer-consumer mode\n";
+        break;
     case 3:
-      std::cout << "Done in readers-writer mode\n";
-      break;
+        std::cout << "Done in readers-writer mode\n";
+        break;
     default:
-      std::cout << "Invalid option\n";
-      exit(EXIT_FAILURE);
-      break;
+        std::cout << "Invalid option\n";
+        exit(EXIT_FAILURE);
+        break;
   }
   return 0;
 }
