@@ -8,6 +8,8 @@
 
 QMutex mutex;
 const unsigned totalBufferSize = 60 * 60 * 24 * 30;
+const unsigned total = 60 * 60 * 24 * 365;  // sec * min * hour * days
+const unsigned dataDay = 60 * 60 * 24;
 QWaitCondition buffertNotEmpty;
 QWaitCondition bufferNotFull;
 QVector<float> Buffer;
@@ -30,6 +32,14 @@ class Statistics {
     return sum / size;
   }
 
+  double getMeanConsumer(QVector<float>* data, unsigned startPos) {
+    double sum = 0.0;
+    for (unsigned i = startPos; i < startPos + dataDay; i++) {
+        sum += (*data)[i % totalBufferSize];
+    }
+    return sum / dataDay;
+  }
+
   double median() {
     // Arrays.sort(data);
     std::sort(data.begin(), data.end());
@@ -47,13 +57,13 @@ void serialMode(QVector<float> d, unsigned int total)
         Statistics s(d);
         std::cout << i << " of " << total << " ";
         std::cout << "average temperature " << s.getMean() << " ";
-        std::cout << " with median " << s.median() << "\n";
+        std::cout << " with median " << "\n";
         d.erase(d.begin(), d.end());
       }
     }
 }
 
-void producer(QVector<float> d, unsigned int total, unsigned int dataDay)
+void producer()
 {
     for (unsigned int i = 0; i < total; i++) {
         mutex.lock();
@@ -62,7 +72,7 @@ void producer(QVector<float> d, unsigned int total, unsigned int dataDay)
         }
         mutex.unlock();
 
-        d.push_back(random() % 50 + 50);
+        Buffer[i % totalBufferSize] = random() % 50 + 50;
         comparator++;
 
         mutex.lock();
@@ -73,7 +83,7 @@ void producer(QVector<float> d, unsigned int total, unsigned int dataDay)
     }
 }
 
-void consumer(QVector<float> d, unsigned int total, unsigned int dataDay, unsigned int startPos)
+void consumer(unsigned int startPos)
 {
     unsigned int count = startPos;
     while (count < total) {
@@ -83,11 +93,11 @@ void consumer(QVector<float> d, unsigned int total, unsigned int dataDay, unsign
         }
         mutex.unlock();
 
-        Statistics s(d);
+        Statistics s(Buffer);
         std::cout << count << " of " << total << " ";
-        std::cout << "average temperature " << " ";
+        std::cout << "average temperature " << s.getMeanConsumer(&Buffer, count % totalBufferSize) << " ";
         std::cout << " with median " << "\n";
-        d.erase(d.begin(), d.end());
+        Buffer.erase(Buffer.begin(), Buffer.end());
 
         mutex.lock();
         comparator = comparator - dataDay;
@@ -100,45 +110,14 @@ void consumer(QVector<float> d, unsigned int total, unsigned int dataDay, unsign
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
-    QVector<float> d;
-    unsigned int total = 60 * 60 * 24 * 365;  // sec * min * hour * days
-    unsigned int dataDay = 60 * 60 * 24;
-    int option;
     Buffer.resize(total);
-    std::thread p(producer, d, total, dataDay);
-    std::thread c1(consumer, d, total, dataDay, 0), c2(consumer, d, total, dataDay, dataDay);
+    std::thread p(producer);
+    std::thread c1(consumer, 0), c2(consumer, dataDay);
 
-    do {
-        std::cout << " ==== Synchronization problems ==== " << std::endl;
-        std::cout << "  1. Serial mode." << std::endl;
-        std::cout << "  2. Producer-consumer mode." << std::endl;
-        std::cout << "  3. Readers-writer mode." << std::endl;
-        std::cout << "Choose a option: ";
-        std::cin >> option;
+    p.join();
+    c1.join();
+    c2.join();
+    std::cout << "Done in producer-consumer mode\n";
 
-        if (option < 1 || option > 3) {
-          std::cout << "Invalid option. Try again." << std::endl << std::endl;
-        }
-    } while (option < 1 || option > 3);
-
-      switch (option) {
-        case 1:
-            serialMode(d, total);
-            std::cout << "Done in serial mode\n";
-            break;
-        case 2:
-            p.join();
-            c1.join();
-            c2.join();
-            std::cout << "Done in producer-consumer mode\n";
-            break;
-        case 3:
-            std::cout << "Done in readers-writer mode\n";
-            break;
-        default:
-            std::cout << "Invalid option\n";
-            exit(EXIT_FAILURE);
-            break;
-      }
-      return 0;
+    return 0;
 }
