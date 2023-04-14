@@ -24,6 +24,14 @@ double getMeanConsumer(QVector<float>* data, unsigned startPos) {
   return sum / dataDay;
 }
 
+double getMedianConsumer(QVector<float>* data, unsigned startPos) {
+    std::sort((*data).begin() + startPos, (*data).begin() + startPos + dataDay -1);
+    if ((startPos + dataDay - 1) % 2 == 0) {
+        return (*data)[((startPos + dataDay - 1) / 2) - 1] + (*data)[(startPos + dataDay - 1) / 2] / 2.0;
+    }
+    return (*data)[(startPos + dataDay - 1) / 2];
+}
+
 void producer()
 {
     for (unsigned int i = 0; i < total; i++) {
@@ -56,7 +64,7 @@ void consumer(unsigned int startPos)
 
         std::cout << count << " of " << total << " ";
         std::cout << "average temperature " << getMeanConsumer(&Buffer, count % totalBufferSize) << " ";
-        std::cout << " with median " << "\n";
+        std::cout << " with median " << getMedianConsumer(&Buffer, count & totalBufferSize) << "\n";
 
         mutex.lock();
         comparator = comparator - dataDay;
@@ -70,8 +78,7 @@ void consumer(unsigned int startPos)
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
     Buffer.resize(total);
-    std::thread p(producer);
-    std::thread c1(consumer, 0), c2(consumer, dataDay);
+    std::thread p(producer), c1(consumer, 0), c2(consumer, dataDay);
 
     p.join();
     c1.join();
