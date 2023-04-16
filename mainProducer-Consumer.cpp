@@ -64,7 +64,7 @@ void consumer(unsigned int startPos)
 
         std::cout << count << " of " << total << " ";
         std::cout << "average temperature " << getMeanConsumer(&Buffer, count % totalBufferSize) << " ";
-        std::cout << " with median " << getMedianConsumer(&Buffer, count & totalBufferSize) << "\n";
+        std::cout << " with median " << getMedianConsumer(&Buffer, count % totalBufferSize) << "\n";
 
         mutex.lock();
         comparator = comparator - dataDay;
