@@ -82,11 +82,15 @@ void reader(unsigned int startPos)
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
     Buffer.resize(total);
-    std::thread w(writer), r1(reader, 0), r2(reader, dataDay);
 
+    auto startWriterReader = std::chrono::high_resolution_clock::now();
+    std::thread w(writer), r1(reader, 0), r2(reader, dataDay);
     w.join();
     r1.join();
     r2.join();
+    auto stopWriterReader = std::chrono::high_resolution_clock::now();
+    auto durationWriterReader = std::chrono::duration_cast<std::chrono::microseconds>(stopWriterReader - startWriterReader);
+    std::cout << "Producer/Consumer mode in time: " << durationWriterReader.count() << "\n";
     std::cout << "Done in producer-consumer mode\n";
 
     return 0;
