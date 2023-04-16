@@ -78,11 +78,15 @@ void consumer(unsigned int startPos)
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
     Buffer.resize(total);
-    std::thread p(producer), c1(consumer, 0), c2(consumer, dataDay);
 
+    auto startProducerConsumer = std::chrono::high_resolution_clock::now();
+    std::thread p(producer), c1(consumer, 0), c2(consumer, dataDay);
     p.join();
     c1.join();
     c2.join();
+    auto stopProducerConsumer = std::chrono::high_resolution_clock::now();
+    auto durationProducerConsumer = std::chrono::duration_cast<std::chrono::microseconds>(stopProducerConsumer - startProducerConsumer);
+    std::cout << "Producer/Consumer mode in time: " << durationProducerConsumer.count() << "\n";
     std::cout << "Done in producer-consumer mode\n";
 
     return 0;
