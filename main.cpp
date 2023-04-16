@@ -10,11 +10,12 @@
 
 QMutex mutex;
 const unsigned totalBufferSize = 60 * 60 * 24 * 30;
+const unsigned total = 60 * 60 * 24 * 365;  // sec * min * hour * days
+const unsigned dataDay = 60 * 60 * 24;
 QWaitCondition buffertNotEmpty;
 QWaitCondition bufferNotFull;
 QVector<float> Buffer;
 unsigned comparator = 0;
-
 
 class Statistics {
   // https://stackoverflow.com/questions/7988486/how-do-you-calculate-the-variance-median-and-standard-deviation-in-c-or-java/7988556#7988556
@@ -59,10 +60,6 @@ void serialMode(QVector<float> d, unsigned int total)
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
     QVector<float> d;
-    unsigned int total = 60 * 60 * 24 * 365;  // sec * min * hour * days
-    unsigned int dataDay = 60 * 60 * 24;
-    int option;
-    Buffer.resize(total);
 
     auto startSerial = std::chrono::high_resolution_clock::now();
     serialMode(d, total);
