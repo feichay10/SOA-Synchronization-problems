@@ -90,8 +90,8 @@ int main(int argc, char *argv[]) {
     r2.join();
     auto stopWriterReader = std::chrono::high_resolution_clock::now();
     auto durationWriterReader = std::chrono::duration_cast<std::chrono::microseconds>(stopWriterReader - startWriterReader);
-    std::cout << "Producer/Consumer mode in time: " << durationWriterReader.count() << "\n";
-    std::cout << "Done in producer-consumer mode\n";
+    std::cout << "Writer/Reader mode in time: " << durationWriterReader.count() << "\n";
+    std::cout << "Done in Writer-Reader mode\n";
 
     return 0;
 }
